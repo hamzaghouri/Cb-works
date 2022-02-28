@@ -12,7 +12,7 @@ RUN set -x \
   && mv cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest"
 
 FROM openjdk:11-slim-bullseye
-LABEL maintainer="Tobias Raatiniemi <raatiniemi@gmail.com>"
+
 
 ENV ANDROID_HOME /opt/android-sdk
 ENV PATH $PATH:${ANDROID_HOME}/cmdline-tools/latest/bin
@@ -26,3 +26,5 @@ RUN set -x && apt-get update -qq \
   && rm -rf /var/lib/apt/lists/* \
   && yes | sdkmanager --licenses >/dev/null \
   && sdkmanager platform-tools && yes | sdkmanager "platforms;android-31" | sdkmanager "build-tools;30.0.2" | sdkmanager "system-images;android-31;google_apis;x86_64"
+
+LABEL maintainer="SDK Image"
