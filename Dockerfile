@@ -9,8 +9,8 @@ RUN set -x \
   && mkdir -p "${ANDROID_HOME}/cmdline-tools" \
   && mv cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest"
 
-FROM openjdk:11-slim-bullseye
-LABEL maintainer="Tobias Raatiniemi <raatiniemi@gmail.com>"
+FROM openjdk:11.0.14-zulu
+LABEL maintainer="Creditbook"
 
 ENV ANDROID_HOME /opt/android-sdk
 ENV PATH $PATH:${ANDROID_HOME}/cmdline-tools/latest/bin
