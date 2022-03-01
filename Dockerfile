@@ -1,25 +1,38 @@
-FROM alpine:3.15.0 AS builder
-WORKDIR /build
-ENV ANDROID_HOME /opt/android-sdk
-ENV ANDROID_CMDLINE_TOOLS_ZIP "commandlinetools-linux-8092744_latest.zip"
-RUN set -x \
- # && apk -qU --no-cache add curl=7.80.0-r0 unzip=6.0-r9 ca-certificates=20211220-r0 \
-  && curl -O -Ls "https://dl.google.com/android/repository/${ANDROID_CMDLINE_TOOLS_ZIP}" \
-  && unzip -qq "${ANDROID_CMDLINE_TOOLS_ZIP}" \
-  && mkdir -p "${ANDROID_HOME}/cmdline-tools" \
-  && mv cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest"
-
 FROM azul/zulu-openjdk-alpine:11.0.14
 
-ENV ANDROID_HOME /opt/android-sdk
-ENV PATH $PATH:${ANDROID_HOME}/cmdline-tools/latest/bin
+ENV DEBIAN_FRONTEND noninteractive
 
-COPY --from=builder ${ANDROID_HOME} ${ANDROID_HOME}
+ENV ANDROID_HOME      /opt/android-sdk-linux
+ENV ANDROID_SDK_HOME  ${ANDROID_HOME}
+ENV ANDROID_SDK_ROOT  ${ANDROID_HOME}
+ENV ANDROID_SDK       ${ANDROID_HOME}
 
-RUN set -x && apt-get update -qq \
-  && apt-cache madison git ssh curl unzip libgnutls30 liblz4-1 libgcrypt20 libhogweed6 libnettle8 \
-  && apt-get install -qq -y git=1:2.30.2-1 ssh=1:8.4p1-5 curl=7.74.0-1.3+deb11u1 unzip=6.0-26 libgnutls30=3.7.1-5 liblz4-1=1.9.3-2 libgcrypt20=1.8.7-6 libhogweed6=3.7.3-1 libnettle8=3.7.3-1 --no-install-recommends \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* \
-  && yes | sdkmanager --licenses >/dev/null \
-  && sdkmanager platform-tools && yes | sdkmanager "platforms;android-32"
+ENV PATH "${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin"
+ENV PATH "${PATH}:${ANDROID_HOME}/cmdline-tools/tools/bin"
+ENV PATH "${PATH}:${ANDROID_HOME}/tools/bin"
+ENV PATH "${PATH}:${ANDROID_HOME}/build-tools/32.0.0"
+ENV PATH "${PATH}:${ANDROID_HOME}/platform-tools"
+ENV PATH "${PATH}:${ANDROID_HOME}/emulator"
+ENV PATH "${PATH}:${ANDROID_HOME}/bin"
+
+RUN dpkg --add-architecture i386 && \
+    apt-get update -yqq && \
+    apt-get install -y curl expect git libc6:i386 libgcc1:i386 libncurses5:i386 libstdc++6:i386 zlib1g:i386 openjdk-11-jdk wget unzip vim && \
+    apt-get clean
+
+RUN groupadd android && useradd -d /opt/android-sdk-linux -g android android
+
+COPY tools /opt/tools
+COPY licenses /opt/licenses
+
+WORKDIR /opt/android-sdk-linux
+
+RUN /opt/tools/entrypoint.sh built-in
+
+RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "cmdline-tools;latest"
+RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "build-tools;32.0.0"
+RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "platform-tools"
+RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "platforms;android-31"
+RUN /opt/android-sdk-linux/cmdline-tools/tools/bin/sdkmanager "system-images;android-31;google_apis;x86_64"
+
+CMD /opt/tools/entrypoint.sh built-in
