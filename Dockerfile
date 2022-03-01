@@ -9,7 +9,7 @@ RUN set -x \
   && mkdir -p "${ANDROID_HOME}/cmdline-tools" \
   && mv cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest"
 
-FROM openjdk:11.0.14-zulu
+FROM azul/zulu-openjdk-alpine:11.0.4-11.33
 LABEL maintainer="Creditbook"
 
 ENV ANDROID_HOME /opt/android-sdk
