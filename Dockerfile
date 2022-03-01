@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:11.0.14
+FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
