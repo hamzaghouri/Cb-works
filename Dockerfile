@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:11.0.14
+FROM alpine:3.15.0 AS builder
 WORKDIR /build
 ENV ANDROID_HOME /opt/android-sdk
 ENV ANDROID_CMDLINE_TOOLS_ZIP "commandlinetools-linux-8092744_latest.zip"
@@ -9,6 +9,7 @@ RUN set -x \
   && mkdir -p "${ANDROID_HOME}/cmdline-tools" \
   && mv cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest"
 
+FROM azul/zulu-openjdk-alpine:11.0.14
 
 ENV ANDROID_HOME /opt/android-sdk
 ENV PATH $PATH:${ANDROID_HOME}/cmdline-tools/latest/bin
