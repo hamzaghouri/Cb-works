@@ -11,7 +11,7 @@ RUN set -x \
   && mkdir -p "${ANDROID_HOME}/cmdline-tools" \
   && mv cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest"
 
-FROM openjdk:11-slim-bullseye
+FROM java 11.0.14-zulu
 
 
 ENV ANDROID_HOME /opt/android-sdk
