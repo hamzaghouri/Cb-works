@@ -1,4 +1,4 @@
-FROM alpine:3.15.0 AS builder
+FROM azul/zulu-openjdk-alpine:11.0.14 AS builder
 WORKDIR /build
 ENV ANDROID_HOME /opt/android-sdk
 ENV ANDROID_CMDLINE_TOOLS_ZIP "commandlinetools-linux-8092744_latest.zip"
@@ -9,8 +9,6 @@ RUN set -x \
   && mkdir -p "${ANDROID_HOME}/cmdline-tools" \
   && mv cmdline-tools "${ANDROID_HOME}/cmdline-tools/latest"
 
-FROM azul/zulu-openjdk-alpine:11.0.4-11.33
-LABEL maintainer="Creditbook"
 
 ENV ANDROID_HOME /opt/android-sdk
 ENV PATH $PATH:${ANDROID_HOME}/cmdline-tools/latest/bin
